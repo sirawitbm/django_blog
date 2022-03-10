@@ -1,38 +1,18 @@
+from copyreg import clear_extension_cache
 from pydoc import render_doc
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+from .forms import PostForm
+from .models import Post
 
-# Dummy data - จำลองว่ามาจาก database
-data = [
-    {
-        'title': 'Post 1',
-        'author': 'Jome',
-        'content': """ Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.""",
-    },
-    {
-        'title': 'Post 2',
-        'author': 'Jome',
-        'content': """ Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.""",
-    },
-    {
-        'title': 'Post 3',
-        'author': 'Jome',
-        'content': """ Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.""",
-    },
-    {
-        'title': 'Post 4',
-        'author': 'Jome',
-        'content': """ Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.""",
-    },
-]
-# Create your views here.
 def PostListView(request): 
+    posts = Post.objects.all()
     title = "Blog - Home"
     template = 'blog/home.html'
     # data_2col = list(zip(data[::2], data[1::2]))
     context = {
         'title': title,
-        'posts': data,
-        'posts_count': len(data)
+        'posts': posts,
+        'posts_count': len(posts)
     }
     return render(request, template, context)
 
@@ -40,6 +20,20 @@ def about(request):
     return render(request, 'blog/about.html')
 
 def PostCreateView(request):
+    if request.method == "POST":
+        form = PostForm(request.POST)
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+            post = Post(
+                author = cleaned_data['author'],
+                title = cleaned_data['title'],
+                content = cleaned_data['content'],
+            )
+            post.save()
+            return redirect('blog-home')
+        else:
+            print("POST data is invalid")
+
     title = "Blog - Create"
     template = 'blog/post_create.html'
     context = {
@@ -47,11 +41,14 @@ def PostCreateView(request):
     }
     return render(request, template, context)
 
-def PostDetailView(request):
+def PostDetailView(request, pk):
+    post = Post.objects.filter(id=pk)
+    
     title = "Blog - Detail"
     template = 'blog/post_detail.html'
     context = {
         'title': title,
+        'post': post.first(),
     }
     return render(request, template, context)
 
