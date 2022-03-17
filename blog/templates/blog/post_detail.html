@@ -4,22 +4,17 @@
     <div class="col-3">
         <div class="card" style="width: 18rem;">
             <div class="card-body">
-              <h5 class="card-title">Create your post here!</h5>
-              <p class="card-text">First time here? feel free to post anything here. Just follow the steps below</p>
+              <h5 class="card-title">Update/delete your post here!</h5>
+              <p class="card-text">Click the button below to perform the action</p>
             </div>
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item">1. prepare the content</li>
-              <li class="list-group-item">2. click the Create post! button below</li>
-              <li class="list-group-item">3. click Post!</li>
-            </ul>
-            <div class="card-body">
-              <a href="{% url 'blog-create' %}" class="btn btn-outline-secondary">Create post!</a>
-              <a href="{% url 'blog-home' %}" class="btn btn-outline-secondary ms-2">Back to Home</a>
+            <div class="card-body text-center">
+              <a href="{% url 'blog-update' post.id %}" class="btn btn-outline-warning">Update</a>
+              <a href="{% url 'blog-delete' post.id %}" class="btn btn-outline-danger ms-2">Delete</a>
             </div>
         </div>
     </div>
     <div class="col">
-        <h1 class="mb-3">Posts {{ post.id }} - detail</h1> 
+        <h1 class="mb-3">Post {{ post.id }} - detail</h1> 
         <div class="card mt-2">
             <div class="card-header">
                 {{ post.author }}

@@ -41,11 +41,50 @@ def PostCreateView(request):
     }
     return render(request, template, context)
 
+def PostUpdateView(request, pk):
+    post = Post.objects.filter(id=pk)
+
+    if request.method == "POST":
+        form = PostForm(request.POST)
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+            post.update(
+                author = cleaned_data['author'],
+                title = cleaned_data['title'],
+                content = cleaned_data['content'],
+            )
+            return redirect('blog-detail', pk)
+        else:
+            print("POST data is invalid")
+
+    title = "Blog - Update"
+    template = 'blog/post_update.html'
+    context = {
+        'title': title,
+        'post': post.first(),
+    }
+    return render(request, template, context)
+
 def PostDetailView(request, pk):
     post = Post.objects.filter(id=pk)
     
     title = "Blog - Detail"
     template = 'blog/post_detail.html'
+    context = {
+        'title': title,
+        'post': post.first(),
+    }
+    return render(request, template, context)
+
+def PostDeleteView(request, pk):
+    post = Post.objects.filter(id=pk)
+
+    if request.method == "POST":
+        post.delete()
+        return redirect('blog-home')
+
+    title = "Blog - Delete"
+    template = 'blog/post_delete.html'
     context = {
         'title': title,
         'post': post.first(),

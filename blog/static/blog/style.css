@@ -5,5 +5,11 @@ body {
     width: 100%;
 }
 .continue-reading > a{
-    color:rgb(108,117,125);
+    color:rgb(87, 92, 97);
+}
+
+.row > .form-col {
+    border-style: solid;
+    border-color: black;
+    border: 200px;
 }
